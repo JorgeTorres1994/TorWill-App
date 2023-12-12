@@ -1,0 +1,35 @@
+name: nueva_app_web_matematicas
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.1
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.15.0
+  cloud_firestore: ^4.13.3
+  firebase_storage: ^11.5.3
+  firebase_storage_web: ^3.6.15
+  image_picker: ^0.8.4+4
+  universal_html: ^2.2.4
+  shared_preferences: ^2.0.5
+  image_picker_web: ^3.1.1
+  http: ^1.1.0
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - images/
+    - assets/images/
