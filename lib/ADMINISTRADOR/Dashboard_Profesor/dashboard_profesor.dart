@@ -431,6 +431,7 @@ import 'package:nueva_app_web_matematicas/ADMINISTRADOR/EditarPerfilUsuario/Edit
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Examenes/ExamenScreen.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/SeleccionNotasScreen/SeleccionNotasScreen.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Temarios/ListarTemarios.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Temas/ListarTemas.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Usuarios/listar_usuario.dart';
 import 'package:nueva_app_web_matematicas/Login.dart';
 
@@ -683,7 +684,8 @@ class _DashboardState extends State<Dashboard> {
             context, MaterialPageRoute(builder: (context) => ListarTemario()));
         break;
       case 3:
-        //Navigator.push(context, MaterialPageRoute(builder: (context) => UsuariosScreen()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ListarTemas()));
         break;
       case 4:
         Navigator.push(context,
