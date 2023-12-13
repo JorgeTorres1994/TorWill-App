@@ -194,7 +194,7 @@ class _ListaTemasExamenState extends State<ListaTemasExamen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ExamenPage(
+                            builder: (context) => ExamenEstudianteScreen(
                               temaId: temaId,
                             ),
                           ),

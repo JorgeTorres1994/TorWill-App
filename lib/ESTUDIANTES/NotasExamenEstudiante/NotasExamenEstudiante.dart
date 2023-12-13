@@ -18,7 +18,8 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notas de tus Examenes'),
+        title: Text('Notas de tus Exámenes'),
+        backgroundColor: Colors.lightGreen, // Cambié a un verde más claro
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -45,7 +46,6 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
               var puntajeTotal = resultado['puntajeTotal'].toString();
               var nombreExamen = ''; // Inicialmente vacío
 
-              // Obtener el nombre del examen de forma asíncrona
               return FutureBuilder<DocumentSnapshot>(
                 future: _firestore
                     .collection('Examen')
@@ -56,9 +56,33 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
                       examSnapshot.data != null) {
                     nombreExamen = examSnapshot.data!['nombre'];
                   }
-                  return ListTile(
-                    title: Text(nombreExamen),
-                    subtitle: Text('Fecha: $fecha\nPuntaje: $puntajeTotal'),
+                  return Card(
+                    margin: EdgeInsets.all(8),
+                    elevation: 3,
+                    color: Colors.blueAccent, // Cambié a un azul más oscuro
+                    child: ListTile(
+                      title: Text(
+                        nombreExamen,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 4),
+                          Text(
+                            'Fecha: $fecha',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            'Puntaje: $puntajeTotal',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );
@@ -69,6 +93,7 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
     );
   }
 }
+
 */
 
 import 'package:flutter/material.dart';
@@ -91,7 +116,8 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notas de tus Examenes'),
+        title: Text('Notas de tus Exámenes'),
+        backgroundColor: Colors.lightGreen,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -118,7 +144,6 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
               var puntajeTotal = resultado['puntajeTotal'].toString();
               var nombreExamen = ''; // Inicialmente vacío
 
-              // Obtener el nombre del examen de forma asíncrona
               return FutureBuilder<DocumentSnapshot>(
                 future: _firestore
                     .collection('Examen')
@@ -129,9 +154,48 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
                       examSnapshot.data != null) {
                     nombreExamen = examSnapshot.data!['nombre'];
                   }
-                  return ListTile(
-                    title: Text(nombreExamen),
-                    subtitle: Text('Fecha: $fecha\nPuntaje: $puntajeTotal'),
+                  var imageToShow =
+                      'images/enhorabuena.png'; // Ruta de la imagen
+
+                  return Card(
+                    margin: EdgeInsets.all(8),
+                    elevation: 3,
+                    color: Colors.blueAccent,
+                    child: ListTile(
+                      title: Text(
+                        nombreExamen,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 4),
+                          Text(
+                            'Puntaje: $puntajeTotal',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            'Fecha: $fecha',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      trailing: Container(
+                        width: 90, // Ajusta el ancho según tus preferencias
+                        height:
+                            double.infinity, // Ocupa todo el alto disponible
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            imageToShow,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 },
               );

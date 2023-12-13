@@ -147,15 +147,15 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nueva_app_web_matematicas/ESTUDIANTES/Examenes_Preguntas_Propuestas/examenes_preguntas_propuestas.dart';
 
-class ExamenPage extends StatefulWidget {
+class ExamenEstudianteScreen extends StatefulWidget {
   final String temaId;
 
-  ExamenPage({required this.temaId});
+  ExamenEstudianteScreen({required this.temaId});
   @override
-  _ExamenPageState createState() => _ExamenPageState();
+  _ExamenEstudianteScreenState createState() => _ExamenEstudianteScreenState();
 }
 
-class _ExamenPageState extends State<ExamenPage> {
+class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
   String selectedThemeId = "";
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();

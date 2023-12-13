@@ -163,6 +163,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
 import 'package:nueva_app_web_matematicas/ESTUDIANTES/Dashboard_Estudiante/dashboard_estudiante.dart';
+import 'package:nueva_app_web_matematicas/forgot_password_page.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
@@ -268,6 +269,30 @@ class LoginScreen extends StatelessWidget {
                     onPrimary: Colors.white,
                   ),
                   child: Text('Iniciar Sesión'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const RecuperarPasswordScreen();
+                          }));
+                        },
+                        child: Text(
+                          '¿Olvidaste tu contraseña?',
+                          //style: TextStyle(color: Colors.grey[600]),
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),

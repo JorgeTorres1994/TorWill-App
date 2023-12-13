@@ -25,6 +25,7 @@ dependencies:
   file_picker: ^6.1.1
   http: ^1.1.0
   intl: ^0.18.1
+  assets_audio_player: ^3.1.1
 
 dev_dependencies:
   flutter_test:
