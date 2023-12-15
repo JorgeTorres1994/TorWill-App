@@ -258,7 +258,7 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
     return null;
   }
 
-  Future<void> _subirImagen() async {
+  /*Future<void> _subirImagen() async {
     final imageUrl = await _subirArchivo('image');
     if (imageUrl != null) {
       setState(() {
@@ -273,7 +273,7 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
         ),
       );
     }
-  }
+  }*/
 
   Future<void> _subirVideo() async {
     final videoUrl = await _subirArchivo('mp4');
@@ -362,10 +362,10 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
               hint: Text('Seleccione un Temario'),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
+            /*ElevatedButton(
               onPressed: _subirImagen,
               child: Text('Subir Imagen'),
-            ),
+            ),*/
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _subirVideo,

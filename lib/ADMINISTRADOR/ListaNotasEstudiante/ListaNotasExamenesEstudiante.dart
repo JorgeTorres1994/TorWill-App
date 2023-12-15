@@ -173,12 +173,7 @@ class _ListaNotasExamenEstudianteState
                   var userData =
                       userSnapshot.data!.data() as Map<String, dynamic>?;
                   var displayName = userData?['display_name'] ?? 'Anónimo';
-                  var gender = userData?['gender'] ?? '';
-
-                  // Determinar la ruta de la imagen según el gender
-                  var imageAssetPath = gender == 'Masculino'
-                      ? 'images/chico.png'
-                      : 'images/leyendo.png';
+                  var photoUrl = userData?['photo_url'] ?? 'images/chico.png';
 
                   return FutureBuilder<DocumentSnapshot>(
                     future: _firestore.collection('Examen').doc(examenId).get(),
@@ -190,14 +185,14 @@ class _ListaNotasExamenEstudianteState
                       var nombreExamen = examenData?['nombre'] ?? 'Desconocido';
 
                       return Card(
-                        elevation: 3,
+                        elevation: 3, // Añadir sombra
                         margin:
                             EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         child: ListTile(
                           contentPadding: EdgeInsets.all(16),
                           leading: CircleAvatar(
-                            radius: 20,
-                            backgroundImage: AssetImage(imageAssetPath),
+                            backgroundImage: NetworkImage(photoUrl),
+                            backgroundColor: Colors.grey,
                           ),
                           title: Text(
                             displayName,

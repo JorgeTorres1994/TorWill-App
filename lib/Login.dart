@@ -1,6 +1,9 @@
-/*import 'package:firebase_auth/firebase_auth.dart';
+/*import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
+import 'package:nueva_app_web_matematicas/ESTUDIANTES/Dashboard_Estudiante/dashboard_estudiante.dart';
+import 'package:nueva_app_web_matematicas/forgot_password_page.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
@@ -14,16 +17,18 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar Sesión'),
+        iconTheme: IconThemeData(
+          color:
+              Colors.white, // Cambia el color del ícono de retroceso a blanco
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF92A8D1), // Azul suave
-                Color(0xFFD4A5A5), // Rosa suave
-                Colors.white,
+                Color(0xFF333333), // Negro oscuro
+                Color(0xFF1A1A1A), // Gris oscuro
               ],
             ),
           ),
@@ -35,9 +40,8 @@ class LoginScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF92A8D1), // Azul suave
-              Color(0xFFD4A5A5), // Rosa suave
-              Colors.white,
+              Color(0xFF333333), // Negro oscuro
+              Color(0xFF1A1A1A), // Gris oscuro
             ],
           ),
         ),
@@ -50,7 +54,7 @@ class LoginScreen extends StatelessWidget {
               children: [
                 // Sección de Imagen
                 Image.asset(
-                  'images/leyendo.png',
+                  'images/gorra.png',
                   height: 150,
                   width: 150,
                 ),
@@ -62,7 +66,7 @@ class LoginScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.white, // Texto en color blanco
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -70,23 +74,42 @@ class LoginScreen extends StatelessWidget {
                 // Sección de Inicio de Sesión
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Colors.white), // Añadí el estilo aquí
+                  decoration: InputDecoration(
                     labelText: 'Correo electrónico',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: Colors.white, // Icono en color blanco
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.white, // Etiqueta en color blanco
+                    ),
+                    hintStyle: TextStyle(color: Colors.white),
+                    contentPadding: EdgeInsets.all(12),
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16), // Espaciador entre los TextField
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Colors.white), // Añadí el estilo aquí
+                  decoration: InputDecoration(
                     labelText: 'Contraseña',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: Colors.white, // Icono en color blanco
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.white, // Etiqueta en color blanco
+                    ),
+                    hintStyle: TextStyle(color: Colors.white),
+                    contentPadding: EdgeInsets.all(12),
                   ),
                 ),
+
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () async {
@@ -102,10 +125,33 @@ class LoginScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
+                    primary: Color(0xFF6495ED), // Azul acero
                     onPrimary: Colors.white,
                   ),
                   child: Text('Iniciar Sesión'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const RecuperarPasswordScreen();
+                          }));
+                        },
+                        child: Text(
+                          '¿Olvidaste tu contraseña?',
+                          style: TextStyle(
+                            color: Colors.lightBlueAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -125,17 +171,30 @@ class LoginScreen extends StatelessWidget {
         password: password,
       );
 
-      // El usuario ha iniciado sesión exitosamente
-      print('Usuario autenticado: ${userCredential.user?.email}');
+      // Obtener datos adicionales del usuario
+      User? user = userCredential.user;
+      if (user != null) {
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        var isAdmin = userData['isAdmin'] ?? false;
 
-      // Muestra un mensaje de éxito
-      _showMessage(context, 'Inicio de sesión exitoso');
+        // El usuario ha iniciado sesión exitosamente
+        print('Usuario autenticado: ${user.email}, isAdmin: $isAdmin');
 
-      // Navegar al Dashboard usando Navigator.push
-      Navigator.pushReplacement(
-        navContext,
-        MaterialPageRoute(builder: (context) => Dashboard()),
-      );
+        // Muestra un mensaje de éxito
+        _showMessage(context, 'Inicio de sesión exitoso');
+
+        // Redirige al Dashboard o DashboardEstudiante
+        if (isAdmin) {
+          Navigator.pushReplacement(
+              navContext, MaterialPageRoute(builder: (context) => Dashboard()));
+        } else {
+          Navigator.pushReplacement(navContext,
+              MaterialPageRoute(builder: (context) => DashboardEstudiante()));
+        }
+      }
     } catch (e) {
       // Si hay un error al iniciar sesión, puedes manejarlo aquí
       print('Error al iniciar sesión: $e');
@@ -177,16 +236,18 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar Sesión'),
+        iconTheme: IconThemeData(
+          color:
+              Colors.white, // Cambia el color del ícono de retroceso a blanco
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF92A8D1), // Azul suave
-                Color(0xFFD4A5A5), // Rosa suave
-                Colors.white,
+                Color(0xFF333333), // Negro oscuro
+                Color(0xFF1A1A1A), // Gris oscuro
               ],
             ),
           ),
@@ -198,9 +259,8 @@ class LoginScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF92A8D1), // Azul suave
-              Color(0xFFD4A5A5), // Rosa suave
-              Colors.white,
+              Color(0xFF333333), // Negro oscuro
+              Color(0xFF1A1A1A), // Gris oscuro
             ],
           ),
         ),
@@ -225,7 +285,7 @@ class LoginScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.white, // Texto en color blanco
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -233,23 +293,42 @@ class LoginScreen extends StatelessWidget {
                 // Sección de Inicio de Sesión
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Colors.white), // Añadí el estilo aquí
+                  decoration: InputDecoration(
                     labelText: 'Correo electrónico',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: Colors.white, // Icono en color blanco
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.white, // Etiqueta en color blanco
+                    ),
+                    hintStyle: TextStyle(color: Colors.white),
+                    contentPadding: EdgeInsets.all(12),
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16), // Espaciador entre los TextField
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Colors.white), // Añadí el estilo aquí
+                  decoration: InputDecoration(
                     labelText: 'Contraseña',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: Colors.white, // Icono en color blanco
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.white, // Etiqueta en color blanco
+                    ),
+                    hintStyle: TextStyle(color: Colors.white),
+                    contentPadding: EdgeInsets.all(12),
                   ),
                 ),
+
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () async {
@@ -265,7 +344,7 @@ class LoginScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
+                    primary: Color(0xFF6495ED), // Azul acero
                     onPrimary: Colors.white,
                   ),
                   child: Text('Iniciar Sesión'),
@@ -284,9 +363,8 @@ class LoginScreen extends StatelessWidget {
                         },
                         child: Text(
                           '¿Olvidaste tu contraseña?',
-                          //style: TextStyle(color: Colors.grey[600]),
                           style: TextStyle(
-                            color: Colors.blue,
+                            color: Colors.lightBlueAccent,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

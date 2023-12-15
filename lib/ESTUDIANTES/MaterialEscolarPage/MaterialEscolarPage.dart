@@ -20,7 +20,7 @@ class MaterialEscolarPage extends StatefulWidget {
 
 class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
   late VideoPlayerController _videoController;
-  late AssetsAudioPlayer _audioPlayer;
+  //late AssetsAudioPlayer _audioPlayer;
   double videoHeight = 300.0;
 
   @override
@@ -30,8 +30,8 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
       ..initialize().then((_) {
         setState(() {});
       });
-    _audioPlayer = AssetsAudioPlayer();
-    _audioPlayer.open(Audio.network(widget.urlDeRecording), autoStart: false);
+    //_audioPlayer = AssetsAudioPlayer();
+    //_audioPlayer.open(Audio.network(widget.urlDeRecording), autoStart: false);
   }
 
   @override
@@ -44,7 +44,7 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
           onPressed: () {
             _videoController.setVolume(0);
             _videoController.pause();
-            _audioPlayer.stop();
+            //_audioPlayer.stop();
             Navigator.of(context).pop();
           },
         ),
@@ -74,14 +74,13 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
                     )
                   : Center(child: CircularProgressIndicator()),
             ),
-            SizedBox(height: 16),
+            /*SizedBox(height: 16),
             ElevatedButton(
               onPressed: _playPauseAudio,
               child: Text(_audioPlayer.isPlaying.value
                   ? 'Pausar Grabación'
                   : 'Reproducir Grabación'),
-            ),
-            // ... cualquier otro contenido de tu página
+            ),*/
           ],
         ),
       ),
@@ -137,22 +136,23 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
     });
   }
 
-  void _playPauseAudio() {
+  /*void _playPauseAudio() {
     if (_audioPlayer.isPlaying.value) {
       _audioPlayer.pause();
     } else {
       _audioPlayer.play();
     }
     setState(() {}); // Update the UI based on audio player state.
-  }
+  }*/
 
   @override
   void dispose() {
     _videoController.dispose();
-    _audioPlayer.dispose();
+    //_audioPlayer.dispose();
     super.dispose();
   }
 }
+
 */
 
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -177,7 +177,7 @@ class MaterialEscolarPage extends StatefulWidget {
 
 class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
   late VideoPlayerController _videoController;
-  late AssetsAudioPlayer _audioPlayer;
+  //late AssetsAudioPlayer _audioPlayer;
   double videoHeight = 300.0;
 
   @override
@@ -187,8 +187,8 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
       ..initialize().then((_) {
         setState(() {});
       });
-    _audioPlayer = AssetsAudioPlayer();
-    _audioPlayer.open(Audio.network(widget.urlDeRecording), autoStart: false);
+    //_audioPlayer = AssetsAudioPlayer();
+    //_audioPlayer.open(Audio.network(widget.urlDeRecording), autoStart: false);
   }
 
   @override
@@ -201,7 +201,7 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
           onPressed: () {
             _videoController.setVolume(0);
             _videoController.pause();
-            _audioPlayer.stop();
+            //_audioPlayer.stop();
             Navigator.of(context).pop();
           },
         ),
@@ -231,14 +231,13 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
                     )
                   : Center(child: CircularProgressIndicator()),
             ),
-            SizedBox(height: 16),
+            /*SizedBox(height: 16),
             ElevatedButton(
               onPressed: _playPauseAudio,
               child: Text(_audioPlayer.isPlaying.value
                   ? 'Pausar Grabación'
                   : 'Reproducir Grabación'),
-            ),
-            // ... cualquier otro contenido de tu página
+            ),*/
           ],
         ),
       ),
@@ -294,19 +293,19 @@ class _MaterialEscolarPageState extends State<MaterialEscolarPage> {
     });
   }
 
-  void _playPauseAudio() {
+  /*void _playPauseAudio() {
     if (_audioPlayer.isPlaying.value) {
       _audioPlayer.pause();
     } else {
       _audioPlayer.play();
     }
     setState(() {}); // Update the UI based on audio player state.
-  }
+  }*/
 
   @override
   void dispose() {
     _videoController.dispose();
-    _audioPlayer.dispose();
+    //_audioPlayer.dispose();
     super.dispose();
   }
 }

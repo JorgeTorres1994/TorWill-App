@@ -123,11 +123,14 @@ class _DashboardEstudianteState extends State<DashboardEstudiante> {
           ),
 
           // Mensaje de introducción
-          Text(
-            'Explora tus temarios:',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Explora tus temarios:',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
@@ -391,7 +394,8 @@ class _DashboardEstudianteState extends State<DashboardEstudiante> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ListaTemasCuestionario(temario: selectedTemario),
+        builder: (context) =>
+            ListaTemasCuestionario(temarioRef: selectedTemario['name']),
       ),
     );
   }
@@ -413,7 +417,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:nueva_app_web_matematicas/Bienvenida/Lista_Temas_Cuestionario.dart/lista_temas_cuestionario.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Lista_Temas_Cuestionario.dart/lista_temas_cuestionario.dart';
 import 'package:nueva_app_web_matematicas/ESTUDIANTES/ChatScreen/ChatScreen.dart';
 import 'package:nueva_app_web_matematicas/ESTUDIANTES/Lista_Temarios_Examen/Lista_Temarios_Examen.dart';
 import 'package:nueva_app_web_matematicas/ESTUDIANTES/Notas_Estudiantes/notas_estudiantes.dart';
@@ -534,11 +538,14 @@ class _DashboardEstudianteState extends State<DashboardEstudiante> {
           ),
 
           // Mensaje de introducción
-          Text(
-            'Explora tus temarios:',
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Explora tus temarios:',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 

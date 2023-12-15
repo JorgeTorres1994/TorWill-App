@@ -88,7 +88,7 @@ class _EditarTemasState extends State<EditarTemas> {
     return null;
   }
 
-  Future<void> _subirImagen() async {
+  /*Future<void> _subirImagen() async {
     final imageUrl = await _subirArchivo('image');
     if (imageUrl != null) {
       setState(() {
@@ -103,7 +103,7 @@ class _EditarTemasState extends State<EditarTemas> {
         ),
       );
     }
-  }
+  }*/
 
   Future<void> _subirVideo() async {
     final videoUrl = await _subirArchivo('mp4');
@@ -191,11 +191,11 @@ class _EditarTemasState extends State<EditarTemas> {
               hint: Text('Seleccione un Temario'),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
+            /*ElevatedButton(
               onPressed: _subirImagen,
               child: Text('Subir Nueva Imagen'),
             ),
-            SizedBox(height: 16.0),
+            SizedBox(height: 16.0),*/
             ElevatedButton(
               onPressed: _subirVideo,
               child: Text('Subir Nuevo Video'),

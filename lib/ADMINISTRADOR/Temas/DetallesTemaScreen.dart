@@ -32,35 +32,53 @@ class DetallesTemaScreen extends StatelessWidget {
           // Configurar el controlador de Chewie
           ChewieController _chewieController = ChewieController(
             videoPlayerController: _videoPlayerController,
-            autoPlay:
-                false, // Puedes configurar esto como true si quieres que el video se reproduzca automáticamente
+            autoPlay: false,
             looping: false,
+            aspectRatio: 3 /
+                2, // Establece un aspect ratio personalizado (400x600 pixels)
           );
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height:
-                    200, // Establece la altura deseada para el área de visualización del video
-                child: Chewie(controller: _chewieController),
+          return SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 600,
+                      height: 400,
+                      child: Chewie(controller: _chewieController),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Nombre: ${tema['name']}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Temario: ${tema['temarioRef']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Text('Nombre: ${tema['name']}'),
-              Text('Temario: ${tema['temarioRef']}'),
-              ElevatedButton(
-                onPressed: () {
-                  // Puedes agregar lógica adicional para controlar la reproducción del video aquí
-                  _videoPlayerController.play();
-                },
-                child: Text('Reproducir Video'),
-              ),
-            ],
+            ),
           );
         },
       ),
     );
   }
-}*/
+}
+
+*/
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -98,34 +116,42 @@ class DetallesTemaScreen extends StatelessWidget {
             videoPlayerController: _videoPlayerController,
             autoPlay: false,
             looping: false,
+            aspectRatio: 3 /
+                2, // Establece un aspect ratio personalizado (400x600 pixels)
           );
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 200,
-                  child: Chewie(controller: _chewieController),
+          return SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 600,
+                      height: 400,
+                      child: Chewie(controller: _chewieController),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Nombre: ${tema['name']}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Temario: ${tema['temarioRef']}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                Text(
-                  'Nombre: ${tema['name']}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Temario: ${tema['temarioRef']}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+              ),
             ),
           );
         },

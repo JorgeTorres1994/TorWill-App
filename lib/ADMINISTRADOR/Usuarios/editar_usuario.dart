@@ -247,7 +247,7 @@ class _EditarUsuarioState extends State<EditarUsuario> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _guardarCambios,
-              child: Text('Guardar'),
+              child: Text('Guardar Cambios'),
             ),
           ],
         ),
