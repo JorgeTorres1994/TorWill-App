@@ -472,6 +472,7 @@ class CuestionarioScreen extends StatefulWidget {
 }
 
 class _CuestionarioScreenState extends State<CuestionarioScreen> {
+  late TextEditingController searchController;
   String selectedThemeId = "";
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -486,6 +487,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
   @override
   void initState() {
     super.initState();
+    searchController = TextEditingController();
     _loadTemas();
     _loadCuestionariosFromFirestore();
   }
@@ -656,7 +658,27 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                 'Cuestionarios Creados:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              ListView.builder(
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  labelText: 'Buscar cuestionario',
+                  suffixIcon: Icon(Icons.search),
+                ),
+                /*onChanged: (value) {
+                  setState(() {});
+                },*/
+                onChanged: (value) {
+                  setState(() {
+                    // Filtrar la lista de cuestionarios por nombre
+                    cuestionarios = cuestionarios
+                        .where((cuestionario) => cuestionario['nombre']
+                            .toLowerCase()
+                            .contains(value.toLowerCase()))
+                        .toList();
+                  });
+                },
+              ),
+              /*ListView.builder(
                 shrinkWrap: true,
                 itemCount: cuestionarios.length,
                 itemBuilder: (context, index) {
@@ -755,6 +777,126 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         ],
                       ),
                     ),
+                  );
+                },
+              ),*/
+              FutureBuilder<QuerySnapshot>(
+                future:
+                    FirebaseFirestore.instance.collection('Cuestionario').get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Text('No se encontraron cuestionarios.');
+                  }
+                  cuestionarios = snapshot.data!.docs
+                      .map((doc) => doc.data() as Map<String, dynamic>)
+                      .toList();
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: cuestionarios.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> cuestionario = cuestionarios[index];
+                      return Card(
+                        child: ListTile(
+                          leading: Image.asset(
+                            'images/practicas.png', // Ruta de la imagen por defecto
+                            width: 48, // Ancho de la imagen
+                            height: 48, // Altura de la imagen
+                          ),
+                          title:
+                              Text('Nombre: ${cuestionario['nombre'] ?? ''}'),
+                          subtitle: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FutureBuilder<DocumentSnapshot>(
+                                      future: FirebaseFirestore.instance
+                                          .collection('temas')
+                                          .doc(cuestionario['temaId'])
+                                          .get(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Text('Tema: Cargando...');
+                                        }
+                                        if (!snapshot.hasData) {
+                                          return Text('Tema: Desconocido');
+                                        }
+                                        String themeName =
+                                            snapshot.data!['name'] as String;
+                                        return Text('Tema: $themeName');
+                                      },
+                                    ),
+                                    Text(
+                                      'Descripción: ${cuestionario['descripcion'] ?? ''}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  setState(() {
+                                    selectedQuizIndex = index;
+                                    loadQuizData(index);
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () async {
+                                  bool confirmDelete =
+                                      await _confirmDelete(context);
+                                  if (confirmDelete) {
+                                    // Eliminar cuestionario
+                                    deleteQuizFromFirestore(index);
+                                  }
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.book_online),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CuestionarioResueltos(
+                                        selectedCuestionarioResuelto:
+                                            cuestionario, // Pasa el cuestionario seleccionado
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.question_answer),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CuestionarioPreguntas(
+                                        selectedCuestionario:
+                                            cuestionario, // Pasa el cuestionario seleccionado
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

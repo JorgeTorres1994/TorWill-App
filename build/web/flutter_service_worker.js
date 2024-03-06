@@ -3,9 +3,10 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"assets/AssetManifest.bin": "57ac61a75d9c9c2d5cb1fa87952cf0e0",
-"assets/AssetManifest.bin.json": "796d1474a3d8d66cbc6446183eab6fe3",
-"assets/AssetManifest.json": "c172a0d13520656f6b551451b1805a32",
+const RESOURCES = {"assets/AssetManifest.bin": "f8f0cbb33225667968e4a51662cc081c",
+"assets/AssetManifest.bin.json": "b6ce22f0e2d44c47a235be32dfa54233",
+"assets/AssetManifest.json": "15ad41ad36eb3c389c1bacb25f9dfb4c",
+"assets/assets/fonts/NotoSans-Regular.ttf": "f9493ba9866990680a59ac42835b01bb",
 "assets/assets/images/anime2.jpg": "a1c4cdb16ed7f3cc15d7f48e59860497",
 "assets/assets/images/calificaciones_cuestionarios.png": "f221546ec773641d3e03b0509b7b4d39",
 "assets/assets/images/calificaciones_examenes.png": "0b11f4af632105012f46da86da9fddc0",
@@ -17,7 +18,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "57ac61a75d9c9c2d5cb1fa87952cf0e0
 "assets/assets/images/profesor.png": "825903bd13e9e970b97b070ff1de0793",
 "assets/assets/images/usuario.jpg": "b2b34517339101a111716be1c203f354",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
-"assets/fonts/MaterialIcons-Regular.otf": "4baf1acb673c56b2015b11d0c59926b6",
+"assets/fonts/MaterialIcons-Regular.otf": "c6597106d11344c948367d50036d970d",
 "assets/images/boleta-de-calificaciones.png": "d44974f4abd92e6e102e9695622d6f88",
 "assets/images/calificaciones.png": "1e77e458f51ad88fb0f6e9911f37d127",
 "assets/images/categorias.png": "2d97285f58246bd74c449c539547961e",
@@ -39,7 +40,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "57ac61a75d9c9c2d5cb1fa87952cf0e0
 "assets/images/temariosExamen.png": "2ab5f19bc29fb186b70ec846cbb54f2c",
 "assets/images/temas.png": "7fb4fcd4990ee582d09ca30e1e73311e",
 "assets/images/temasExamen.png": "17bb9cfef809fe3827a8308b7c5edd48",
-"assets/NOTICES": "9ac97746d85cb44e1105b2a7cf3e6730",
+"assets/NOTICES": "b1d9b0d491e8160fbd6483282b72d889",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "f2163b9d4e6f1ea52063f498c8878bb9",
 "assets/packages/wakelock_plus/assets/no_sleep.js": "7748a45cd593f33280669b29c2c8919a",
 "assets/shaders/ink_sparkle.frag": "4096b5150bac93c41cbc9b45276bd90f",
@@ -56,9 +57,9 @@ const RESOURCES = {"assets/AssetManifest.bin": "57ac61a75d9c9c2d5cb1fa87952cf0e0
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "9fb04f1bf482c24c8e2b527db7831553",
-"/": "9fb04f1bf482c24c8e2b527db7831553",
-"main.dart.js": "b318c6f7ef9f9236c05a18fa704d63d2",
+"index.html": "16855244fe749db5f7aed3676a360933",
+"/": "16855244fe749db5f7aed3676a360933",
+"main.dart.js": "1256247ded6ec95e003c21e811d37290",
 "manifest.json": "b7782b638a227fd1cf4dd4748788a645",
 "version.json": "4fa67ce22bf62a94daee2c5a4d7309d0"};
 // The application shell files that are downloaded before a service worker can

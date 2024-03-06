@@ -13,7 +13,8 @@ class EditarPerfil extends StatefulWidget {
 class _EditarPerfilState extends State<EditarPerfil> {
   late TextEditingController displayNameController;
   late TextEditingController emailController;
-  late String selectedGender;
+  //late String selectedGender;
+  late String selectedGender = genderOptions.first;
   final List<String> genderOptions = ['Masculino', 'Femenino'];
   bool _userDataLoaded = false;
 
@@ -23,7 +24,8 @@ class _EditarPerfilState extends State<EditarPerfil> {
     // Inicializar controladores y obtener datos del usuario
     displayNameController = TextEditingController();
     emailController = TextEditingController();
-    selectedGender = '';
+    //selectedGender = '';
+    selectedGender = genderOptions.isNotEmpty ? genderOptions.first : '';
 
     // Cargar datos del usuario al iniciar la pantalla
     _loadUserData();
@@ -125,18 +127,27 @@ class _EditarPerfilState extends State<EditarPerfil> {
               controller: emailController,
               decoration: InputDecoration(labelText: 'Correo'),
             ),
-            DropdownButtonFormField<String>(
-              value: selectedGender,
-              onChanged: (String? newValue) {
+
+            PopupMenuButton<String>(
+              initialValue: selectedGender,
+              itemBuilder: (BuildContext context) {
+                return genderOptions.map((String option) {
+                  return PopupMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList();
+              },
+              onSelected: (String value) {
                 setState(() {
-                  selectedGender = newValue!;
+                  selectedGender = value;
                 });
               },
-              items: genderOptions
-                  .map((value) =>
-                      DropdownMenuItem(value: value, child: Text(value)))
-                  .toList(),
-              decoration: InputDecoration(labelText: 'Género'),
+              child: ListTile(
+                title: Text('Género'),
+                subtitle: Text(selectedGender),
+                trailing: Icon(Icons.arrow_drop_down),
+              ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
@@ -167,7 +178,8 @@ class EditarPerfil extends StatefulWidget {
 class _EditarPerfilState extends State<EditarPerfil> {
   late TextEditingController displayNameController;
   late TextEditingController emailController;
-  late String selectedGender;
+  //late String selectedGender;
+  late String selectedGender = genderOptions.first;
   final List<String> genderOptions = ['Masculino', 'Femenino'];
   bool _userDataLoaded = false;
 
@@ -177,7 +189,8 @@ class _EditarPerfilState extends State<EditarPerfil> {
     // Inicializar controladores y obtener datos del usuario
     displayNameController = TextEditingController();
     emailController = TextEditingController();
-    selectedGender = '';
+    //selectedGender = '';
+    selectedGender = genderOptions.isNotEmpty ? genderOptions.first : '';
 
     // Cargar datos del usuario al iniciar la pantalla
     _loadUserData();
@@ -279,18 +292,26 @@ class _EditarPerfilState extends State<EditarPerfil> {
               controller: emailController,
               decoration: InputDecoration(labelText: 'Correo'),
             ),
-            DropdownButtonFormField<String>(
-              value: selectedGender,
-              onChanged: (String? newValue) {
+            PopupMenuButton<String>(
+              initialValue: selectedGender,
+              itemBuilder: (BuildContext context) {
+                return genderOptions.map((String option) {
+                  return PopupMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList();
+              },
+              onSelected: (String value) {
                 setState(() {
-                  selectedGender = newValue!;
+                  selectedGender = value;
                 });
               },
-              items: genderOptions
-                  .map((value) =>
-                      DropdownMenuItem(value: value, child: Text(value)))
-                  .toList(),
-              decoration: InputDecoration(labelText: 'Género'),
+              child: ListTile(
+                title: Text('Género'),
+                subtitle: Text(selectedGender),
+                trailing: Icon(Icons.arrow_drop_down),
+              ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(

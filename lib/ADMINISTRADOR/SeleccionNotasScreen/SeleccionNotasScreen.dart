@@ -45,9 +45,9 @@ class SeleccionNotasScreen extends StatelessWidget {
 */
 
 import 'package:flutter/material.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaNotasEstudiante/ListaNotasCuestionarioEstudiante.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaNotasEstudiante/ListaNotasExamenesEstudiante.dart';
-import 'package:nueva_app_web_matematicas/ESTUDIANTES/Dashboard_Estudiante/dashboard_estudiante.dart';
 
 class SeleccionNotasScreen extends StatefulWidget {
   SeleccionNotasScreen({Key? key}) : super(key: key);
@@ -75,7 +75,7 @@ class _SeleccionNotasScreenState extends State<SeleccionNotasScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => DashboardEstudiante(),
+                builder: (context) => Dashboard(),
               ),
             );
           },

@@ -26,6 +26,12 @@ dependencies:
   http: ^1.1.0
   intl: ^0.18.1
   assets_audio_player: ^3.1.1
+  pdf: ^3.10.8
+  printing: ^5.12.0
+  excel: ^4.0.2
+
+  permission_handler: ^11.0.1
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
@@ -38,3 +44,4 @@ flutter:
   assets:
     - images/
     - assets/images/
+    - assets/fonts/NotoSans-Regular.ttf

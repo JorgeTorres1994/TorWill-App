@@ -88,39 +88,6 @@ class _CuestionarioPreguntasPropuestasState
     await mostrarDialogoResultado(resultado);
   }
 
-  /*Future<void> registrarPuntajeTotal(int correctas, String idUsuario) async {
-    String idCuestionario = widget.selectedCuestionario['id'];
-
-    // Registra el puntaje total en ResultadosCuestionarios
-    await FirebaseFirestore.instance
-        .collection('ResultadoCuestionarioEstudiante')
-        .add({
-      'idUsuario': idUsuario,
-      'idCuestionario': idCuestionario,
-      'puntajeTotal':
-          correctas * 2, // Asumiendo que cada respuesta correcta vale 2 puntos
-      'fecha': FieldValue.serverTimestamp(),
-    });
-
-    // Registra el detalle de cada pregunta en DetalleCuestionario
-    for (var pregunta in preguntas) {
-      String preguntaId = pregunta['id'];
-      bool esCorrecta = resultadoRespuestas[preguntaId] ?? false;
-      int puntos = esCorrecta
-          ? 2
-          : 0; // Asumiendo que cada respuesta correcta vale 2 puntos
-
-      await FirebaseFirestore.instance
-          .collection('DetalleCuestionario')
-          .doc(preguntaId)
-          .set({
-        'idCuestionarioPreguntas': preguntaId,
-        'puntos': puntos,
-        'respondidoPor': idUsuario, // Opcional: para saber quién respondió
-      }, SetOptions(merge: true));
-    }
-  }*/
-
   Future<void> registrarPuntajeTotal(int correctas, String idUsuario) async {
     String idCuestionario = widget.selectedCuestionario['id'];
 
@@ -153,7 +120,7 @@ class _CuestionarioPreguntasPropuestasState
     for (var pregunta in preguntas) {
       String preguntaId = pregunta['id'];
       bool esCorrecta = resultadoRespuestas[preguntaId] ?? false;
-      int puntos = esCorrecta ? 2 : 0;
+      int puntos = esCorrecta ? 5 : 0;
 
       await FirebaseFirestore.instance
           .collection('DetalleCuestionario')
