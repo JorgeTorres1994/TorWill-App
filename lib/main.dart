@@ -122,7 +122,7 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text('Error: ${snapshot.error}'),
@@ -158,7 +158,7 @@ class MyApp extends StatelessWidget {
                           }
                         }
 
-                        return const CircularProgressIndicator();
+                        return Center(child: CircularProgressIndicator());
                       },
                     );
                   }

@@ -344,8 +344,7 @@ class LoginScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF6495ED), // Azul acero
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: Color(0xFF6495ED),
                   ),
                   child: Text('Iniciar Sesión'),
                 ),

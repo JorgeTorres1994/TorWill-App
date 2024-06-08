@@ -146,7 +146,7 @@ class _RecuperarPasswordScreenState extends State<RecuperarPasswordScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue, // Color de fondo del botón
+                  backgroundColor: Colors.blue, // Color de fondo del botón
                 ),
               ),
             ],

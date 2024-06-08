@@ -1,53 +1,7 @@
-/*import 'package:flutter/material.dart';
-import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaNotasEstudiante/ListaNotasCuestionarioEstudiante.dart';
-import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaNotasEstudiante/ListaNotasExamenesEstudiante.dart';
-
-class SeleccionNotasScreen extends StatelessWidget {
-  SeleccionNotasScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Selecciona una opción'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ListaNotasCuestionarioEstudiante(),
-                  ),
-                );
-              },
-              child: Text('Ver notas de cuestionarios'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ListaNotasExamenEstudiante(),
-                  ),
-                );
-              },
-              child: Text('Ver notas de exámenes'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-*/
-
 import 'package:flutter/material.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
-import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaNotasEstudiante/ListaNotasCuestionarioEstudiante.dart';
-import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaNotasEstudiante/ListaNotasExamenesEstudiante.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaTemariosCuestionarios/ListaTemariosCuestionarios.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaTemariosExamenes/ListaTemariosExamenes.dart';
 
 class SeleccionNotasScreen extends StatefulWidget {
   SeleccionNotasScreen({Key? key}) : super(key: key);
@@ -88,7 +42,7 @@ class _SeleccionNotasScreenState extends State<SeleccionNotasScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _buildOptionButton(
+              /*_buildOptionButton(
                 'Cuestionarios',
                 'images/boleta-de-calificaciones.png',
                 ListaNotasCuestionarioEstudiante(),
@@ -98,6 +52,19 @@ class _SeleccionNotasScreenState extends State<SeleccionNotasScreen> {
                 'Exámenes',
                 'images/certificado.png',
                 ListaNotasExamenEstudiante(),
+              ),*/
+              _buildOptionButton(
+                'Cuestionarios',
+                'images/boleta-de-calificaciones.png',
+                ListaTemariosCuestionarios()
+                //ListaCuestionarios(),
+              ),
+              SizedBox(width: 20),
+              _buildOptionButton(
+                'Exámenes',
+                'images/certificado.png',
+                ListaTemariosExamenes()
+                //ListaExamenes(),
               ),
             ],
           ),
@@ -122,8 +89,9 @@ class _SeleccionNotasScreenState extends State<SeleccionNotasScreen> {
         ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Colors.transparent,
-            onSurface: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            disabledForegroundColor: Colors.transparent.withOpacity(0.38),
+            disabledBackgroundColor: Colors.transparent.withOpacity(0.12),
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),

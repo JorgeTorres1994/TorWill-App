@@ -206,13 +206,36 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Usuarios/editar_usuario.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Usuarios/registrar_usuario.dart';
+import 'package:pdf/widgets.dart' as pdfLib;
+import 'package:universal_html/html.dart' as html;
 
-class ListarUsuario extends StatelessWidget {
+class ListarUsuario extends StatefulWidget {
+  @override
+  _ListarUsuarioState createState() => _ListarUsuarioState();
+}
+
+class _ListarUsuarioState extends State<ListarUsuario> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         title: Text('LISTA DE ESTUDIANTES'),
+      ),*/
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Text('LISTA DE ESTUDIANTES'),
+            SizedBox(width: 8), // Espacio entre el texto y el botón
+            IconButton(
+              icon: Icon(Icons.picture_as_pdf),
+              onPressed: () {
+                _exportarPDF(); // Llamada para exportar los datos a PDF
+              },
+            ),
+          ],
+        ),
       ),
       body: UserList(),
       floatingActionButton: Padding(
@@ -231,6 +254,42 @@ class ListarUsuario extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _exportarPDF() async {
+    final pdf = pdfLib.Document();
+
+    // Consulta todos los usuarios
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('isAdmin', isEqualTo: false)
+        .get();
+
+    final users = querySnapshot.docs;
+
+    // Agregar datos de usuarios al PDF
+    for (var user in users) {
+      pdf.addPage(
+        pdfLib.MultiPage(
+          build: (context) => [
+            pdfLib.Table.fromTextArray(context: context, data: <List<String>>[
+              ['Nombre', 'Género'],
+              [user['display_name'], user['gender']],
+            ]),
+          ],
+        ),
+      );
+    }
+
+    // Guardar el PDF en el dispositivo
+    final bytes = await pdf.save();
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url)
+      ..setAttribute('download', 'lista_estudiantes.pdf')
+      ..click();
+
+    html.Url.revokeObjectUrl(url);
   }
 }
 

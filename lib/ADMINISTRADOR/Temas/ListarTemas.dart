@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Temas/DetallesTemaScreen.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Temas/RegistrarTemas.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Temas/EditarTemas.dart';
 
 class ListarTemas extends StatelessWidget {
   @override
@@ -153,6 +154,18 @@ class _TemarioListState extends State<TemaList> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditarTemas(temaId: temaId),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                IconButton(
                                   icon: Icon(Icons.delete),
                                   onPressed: () {
                                     showDialog(
@@ -211,8 +224,6 @@ class _TemarioListState extends State<TemaList> {
     });
   }
 }
-
-
 */
 
 import 'dart:html' as html;

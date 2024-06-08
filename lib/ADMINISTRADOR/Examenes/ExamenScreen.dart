@@ -1,5 +1,4 @@
 /*import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ExamenPreguntasPropuestas/ExamenPreguntas.dart';
@@ -447,7 +446,6 @@ class _ExamenScreenState extends State<ExamenScreen> {
 */
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ExamenPreguntasPropuestas/ExamenPreguntas.dart';
@@ -465,6 +463,8 @@ class _ExamenScreenState extends State<ExamenScreen> {
   List<Map<String, dynamic>> examenes = [];
   List<DropdownMenuItem<String>> items = [];
   bool _uploading = false;
+  bool _isLoading =
+      true; // Nueva variable de estado para el círculo de carga global
   int selectedQuizIndex = -1;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -473,8 +473,15 @@ class _ExamenScreenState extends State<ExamenScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTemas();
-    _loadExamenesFromFirestore();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await _loadTemas();
+    await _loadExamenesFromFirestore();
+    setState(() {
+      _isLoading = false; // Finalizar el estado de carga global
+    });
   }
 
   Future<void> _loadExamenes() async {
@@ -591,153 +598,165 @@ class _ExamenScreenState extends State<ExamenScreen> {
       appBar: AppBar(
         title: Text("Crear/Editar Examen"),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: 'Nombre del Examen'),
-              ),
-              SizedBox(height: 16.0),
-              if (items.isNotEmpty)
-                DropdownButton<String>(
-                  value: selectedThemeId,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedThemeId = newValue!;
-                    });
-                  },
-                  items: items,
-                )
-              else
-                CircularProgressIndicator(),
-              SizedBox(height: 16.0),
-              TextField(
-                controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Descripción'),
-              ),
-              SizedBox(height: 32.0),
-              ElevatedButton(
-                onPressed: _uploading
-                    ? null
-                    : () {
-                        if (selectedQuizIndex == -1) {
-                          saveQuizToFirestore(); // Crear examen
-                        } else {
-                          editQuizInFirestore(
-                              selectedQuizIndex); // Editar examen
-                        }
-                      },
-                child: Text(
-                    selectedQuizIndex == -1 ? 'Crear Examen' : 'Editar Examen'),
-              ),
-              SizedBox(height: 32.0),
-              Text(
-                'Examenes Creados:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: examenes.length,
-                itemBuilder: (context, index) {
-                  Map<String, dynamic> examen = examenes[index];
-                  return Card(
-                    child: ListTile(
-                      leading: Image.asset(
-                        'images/examen.png', // Ruta de la imagen por defecto
-                        width: 48, // Ancho de la imagen
-                        height: 48, // Altura de la imagen
+      body: Stack(
+        children: [
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(),
+            )
+          else
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration:
+                          InputDecoration(labelText: 'Nombre del Examen'),
+                    ),
+                    SizedBox(height: 16.0),
+                    if (items.isNotEmpty)
+                      DropdownButton<String>(
+                        value: selectedThemeId,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedThemeId = newValue!;
+                          });
+                        },
+                        items: items,
                       ),
-                      title: Text('Nombre: ${examen['nombre'] ?? ''}'),
-                      subtitle: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    SizedBox(height: 16.0),
+                    TextField(
+                      controller: descriptionController,
+                      decoration: InputDecoration(labelText: 'Descripción'),
+                    ),
+                    SizedBox(height: 32.0),
+                    ElevatedButton(
+                      onPressed: _uploading
+                          ? null
+                          : () {
+                              if (selectedQuizIndex == -1) {
+                                saveQuizToFirestore(); // Crear examen
+                              } else {
+                                editQuizInFirestore(
+                                    selectedQuizIndex); // Editar examen
+                              }
+                            },
+                      child: Text(selectedQuizIndex == -1
+                          ? 'Crear Examen'
+                          : 'Editar Examen'),
+                    ),
+                    SizedBox(height: 32.0),
+                    Text(
+                      'Examenes Creados:',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: examenes.length,
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> examen = examenes[index];
+                        return Card(
+                          child: ListTile(
+                            leading: Image.asset(
+                              'images/examen.png', // Ruta de la imagen por defecto
+                              width: 48, // Ancho de la imagen
+                              height: 48, // Altura de la imagen
+                            ),
+                            title: Text('Nombre: ${examen['nombre'] ?? ''}'),
+                            subtitle: Row(
                               children: [
-                                FutureBuilder<DocumentSnapshot>(
-                                  future: firestore
-                                      .collection('temas')
-                                      .doc(examen['temaId'])
-                                      .get(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Text('Tema: Cargando...');
-                                    }
-                                    if (!snapshot.hasData) {
-                                      return Text('Tema: Desconocido');
-                                    }
-                                    String themeName =
-                                        snapshot.data!['name'] as String;
-                                    return Text('Tema: $themeName');
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      FutureBuilder<DocumentSnapshot>(
+                                        future: firestore
+                                            .collection('temas')
+                                            .doc(examen['temaId'])
+                                            .get(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return Text('Tema: Cargando...');
+                                          }
+                                          if (!snapshot.hasData) {
+                                            return Text('Tema: Desconocido');
+                                          }
+                                          String themeName =
+                                              snapshot.data!['name'] as String;
+                                          return Text('Tema: $themeName');
+                                        },
+                                      ),
+                                      Text(
+                                          'Descripción: ${examen['descripcion'] ?? ''}'),
+                                    ],
+                                  ),
+                                ),
+                                if (examen['imageUrl'] != null)
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Image.network(
+                                      examen['imageUrl'],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedQuizIndex = index;
+                                      loadQuizData(index);
+                                    });
                                   },
                                 ),
-                                Text(
-                                    'Descripción: ${examen['descripcion'] ?? ''}'),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () async {
+                                    bool confirmDelete =
+                                        await _confirmDelete(context);
+                                    if (confirmDelete) {
+                                      // Eliminar cuestionario
+                                      deleteQuizFromFirestore(index);
+                                    }
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.question_answer),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ExamenPreguntas(
+                                          selectedExamen:
+                                              examen, // Pasa el examen seleccionado
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ],
                             ),
                           ),
-                          if (examen['imageUrl'] != null)
-                            Container(
-                              width: 100,
-                              height: 100,
-                              child: Image.network(
-                                examen['imageUrl'],
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              setState(() {
-                                selectedQuizIndex = index;
-                                loadQuizData(index);
-                              });
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () async {
-                              bool confirmDelete =
-                                  await _confirmDelete(context);
-                              if (confirmDelete) {
-                                // Eliminar cuestionario
-                                deleteQuizFromFirestore(index);
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.question_answer),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ExamenPreguntas(
-                                    selectedExamen:
-                                        examen, // Pasa el examen seleccionado
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -820,7 +839,7 @@ class _ExamenScreenState extends State<ExamenScreen> {
     }
   }
 
-  void editQuizInFirestore(int index) async {
+  /*void editQuizInFirestore(int index) async {
     try {
       setState(() {
         _uploading = true;
@@ -871,6 +890,90 @@ class _ExamenScreenState extends State<ExamenScreen> {
       setState(() {
         _uploading = false;
       });
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Error al editar el examen: $e'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }*/
+  void editQuizInFirestore(int index) async {
+    try {
+      setState(() {
+        _uploading = true;
+      });
+
+      // Obtén el ID del examen
+      String quizId = examenes[index]['id'];
+
+      // Verifica que los datos del examen sean correctos
+      print('Actualizando examen con ID: $quizId');
+      print('Datos del examen: ${{
+        'nombre': nameController.text,
+        'temaId': selectedThemeId,
+        'descripcion': descriptionController.text,
+      }}');
+
+      // Actualiza el examen en Firestore
+      await firestore.collection('Examen').doc(quizId).update({
+        'nombre': nameController.text,
+        'temaId': selectedThemeId,
+        'descripcion': descriptionController.text,
+      });
+
+      setState(() {
+        // Actualiza el examen en la lista
+        examenes[index] = {
+          'id': quizId,
+          'nombre': nameController.text,
+          'temaId': selectedThemeId,
+          'descripcion': descriptionController.text,
+        };
+
+        _guardarExamenes();
+        _uploading = false;
+        selectedQuizIndex = -1; // Reinicia el índice seleccionado
+      });
+
+      nameController.clear();
+      descriptionController.clear();
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Éxito'),
+            content: Text('Examen editado y guardado en Firebase.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _uploading = false;
+      });
+
+      print('Error al editar el examen: $e');
 
       showDialog(
         context: context,

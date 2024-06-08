@@ -64,23 +64,6 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
     return null;
   }
 
-  Future<void> _subirImagen() async {
-    final imageUrl = await _subirArchivo('image');
-    if (imageUrl != null) {
-      setState(() {
-        _imagenUrl = imageUrl;
-      });
-
-      // Mostrar Snackbar cuando la imagen se ha subido correctamente
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Imagen subida con éxito'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
   Future<void> _subirVideo() async {
     final videoUrl = await _subirArchivo('mp4');
     if (videoUrl != null) {
@@ -168,10 +151,6 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
               hint: Text('Seleccione un Temario'),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _subirImagen,
-              child: Text('Subir Imagen'),
-            ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _subirVideo,
@@ -210,6 +189,7 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
   List<String> _temarios = [];
   String? _imagenUrl;
   String? _videoUrl;
+  String? _audioUrl;
 
   @override
   void initState() {
@@ -219,30 +199,27 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
 
   Future<void> _cargarTemarios() async {
     try {
-      final temariosSnapshot =
-          await FirebaseFirestore.instance.collection('temario').get();
+      final temariosSnapshot = await FirebaseFirestore.instance.collection('temario').get();
       setState(() {
-        _temarios =
-            temariosSnapshot.docs.map((doc) => doc['name'] as String).toList();
+        _temarios = temariosSnapshot.docs.map((doc) => doc['name'] as String).toList();
       });
     } catch (error) {
       print('Error al cargar los temarios: $error');
     }
   }
 
-  Future<String?> _subirArchivo(String fileType) async {
+  Future<String?> _subirArchivo(String fileType, String extension) async {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: [fileType],
+        allowedExtensions: [extension],
       );
 
       if (result != null && result.files.isNotEmpty) {
         final blob = html.Blob([result.files.first.bytes], fileType);
         final nombreArchivo = result.files.first.name;
 
-        final storageRef =
-            FirebaseStorage.instance.ref('$fileType/$nombreArchivo');
+        final storageRef = FirebaseStorage.instance.ref('$fileType/$nombreArchivo');
         await storageRef.putBlob(blob);
 
         final url = await storageRef.getDownloadURL();
@@ -258,31 +235,29 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
     return null;
   }
 
-  /*Future<void> _subirImagen() async {
-    final imageUrl = await _subirArchivo('image');
-    if (imageUrl != null) {
+  Future<void> _subirAudio() async {
+    final audioUrl = await _subirArchivo('audio', 'mp3');
+    if (audioUrl != null) {
       setState(() {
-        _imagenUrl = imageUrl;
+        _audioUrl = audioUrl;
       });
 
-      // Mostrar Snackbar cuando la imagen se ha subido correctamente
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Imagen subida con éxito'),
+          content: Text('Audio subido con éxito'),
           duration: Duration(seconds: 2),
         ),
       );
     }
-  }*/
+  }
 
   Future<void> _subirVideo() async {
-    final videoUrl = await _subirArchivo('mp4');
+    final videoUrl = await _subirArchivo('video', 'mp4');
     if (videoUrl != null) {
       setState(() {
         _videoUrl = videoUrl;
       });
 
-      // Mostrar Snackbar cuando el video se ha subido correctamente
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Video subido con éxito'),
@@ -305,6 +280,7 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
           'temarioRef': _temarioSeleccionado!,
           'userId': user.uid,
           'imagen': _imagenUrl,
+          'audio': _audioUrl,
           'video': _videoUrl,
         });
 
@@ -321,8 +297,7 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
       print('Error al registrar el tema: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-              'Error al registrar el tema. Por favor, inténtalo de nuevo.'),
+          content: Text('Error al registrar el tema. Por favor, inténtalo de nuevo.'),
           duration: Duration(seconds: 2),
         ),
       );
@@ -362,10 +337,10 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
               hint: Text('Seleccione un Temario'),
             ),
             SizedBox(height: 16.0),
-            /*ElevatedButton(
-              onPressed: _subirImagen,
-              child: Text('Subir Imagen'),
-            ),*/
+            ElevatedButton(
+              onPressed: _subirAudio,
+              child: Text('Subir Audio'),
+            ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _subirVideo,
@@ -373,9 +348,7 @@ class _RegistrarTemasState extends State<RegistrarTemas> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: (_imagenUrl != null || _videoUrl != null)
-                  ? _registrarTema
-                  : null,
+              onPressed: (_imagenUrl != null || _audioUrl != null || _videoUrl != null) ? _registrarTema : null,
               child: Text('Registrar Tema'),
             ),
           ],

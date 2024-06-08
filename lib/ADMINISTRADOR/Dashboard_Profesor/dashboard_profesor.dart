@@ -877,8 +877,9 @@ class _DashboardState extends State<Dashboard> {
         ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Colors.transparent,
-            onSurface: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            disabledForegroundColor: Colors.transparent.withOpacity(0.38),
+            disabledBackgroundColor: Colors.transparent.withOpacity(0.12),
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -1060,8 +1061,12 @@ void navigateToScreen(BuildContext context, int index) {
           context, MaterialPageRoute(builder: (context) => ExamenScreen()));
       break;
     case 6:
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => SeleccionNotasScreen()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SeleccionNotasScreen(),
+        ),
+      );
       break;
     case 7:
       // Obtener el usuario actual

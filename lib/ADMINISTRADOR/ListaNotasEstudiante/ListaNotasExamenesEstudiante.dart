@@ -135,12 +135,6 @@ class _ListaNotasExamenEstudianteState
                 downloadFile(pdfBytes, 'notas_examenes.pdf');
               },
             ),
-            SizedBox(width: 8), // Espacio entre el texto y el botón
-            IconButton(
-              icon: Icon(Icons.download_done_rounded),
-              onPressed: (){
-              },
-            ),
           ],
         ),
       ),
@@ -257,6 +251,11 @@ import 'package:universal_html/html.dart' as html;
 import 'package:http/http.dart' as http;
 
 class ListaNotasExamenEstudiante extends StatefulWidget {
+  final String? idExamen; // Cambio aquí
+
+  ListaNotasExamenEstudiante(
+      {Key? key, this.idExamen})
+      : super(key: key);
   @override
   _ListaNotasExamenEstudianteState createState() =>
       _ListaNotasExamenEstudianteState();
@@ -372,9 +371,19 @@ class _ListaNotasExamenEstudianteState
             SizedBox(width: 8), // Espacio entre el texto y el botón
             IconButton(
               icon: Icon(Icons.picture_as_pdf),
+              /*onPressed: () async {
+                var snapshot = await _firestore
+                    .collection('ResultadoExamenEstudiante')
+                    .get();
+                var resultados = snapshot.docs;
+                var pdfBytes = await generatePdfTotal(resultados);
+                downloadFile(pdfBytes, 'notas_examenes.pdf');
+              },*/
               onPressed: () async {
                 var snapshot = await _firestore
                     .collection('ResultadoExamenEstudiante')
+                    .where('idExamen',
+                        isEqualTo: widget.idExamen) // Cambio aquí
                     .get();
                 var resultados = snapshot.docs;
                 var pdfBytes = await generatePdfTotal(resultados);
@@ -385,7 +394,9 @@ class _ListaNotasExamenEstudianteState
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('ResultadoExamenEstudiante').snapshots(),
+        stream: _firestore.collection('ResultadoExamenEstudiante')
+        .where('idExamen', isEqualTo: widget.idExamen)  // Cambio aquí
+        .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());

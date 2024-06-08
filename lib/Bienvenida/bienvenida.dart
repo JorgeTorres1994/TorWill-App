@@ -136,8 +136,7 @@ class Bienvenida extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.orange,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Colors.orange,
                       padding:
                           EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                       textStyle: TextStyle(
