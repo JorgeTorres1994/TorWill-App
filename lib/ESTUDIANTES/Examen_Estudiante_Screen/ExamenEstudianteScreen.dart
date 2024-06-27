@@ -162,6 +162,7 @@ class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
   List<Map<String, dynamic>> examenes = [];
   List<DropdownMenuItem<String>> items = [];
   int selectedQuizIndex = -1;
+  bool isLoading = true;  // Estado para controlar la carga
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -187,9 +188,13 @@ class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
             ...data, // Agrega el resto de los datos del documento al mapa
           };
         }).toList();
+        isLoading = false;  // Actualiza el estado de carga
       });
     } catch (e) {
       print('Error al cargar examenes desde Firestore: $e');
+      setState(() {
+        isLoading = false;  // Actualiza el estado de carga en caso de error
+      });
     }
   }
 
@@ -199,86 +204,91 @@ class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
       appBar: AppBar(
         title: Text("Examen"),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: examenes.length,
-                itemBuilder: (context, index) {
-                  Map<String, dynamic> examen = examenes[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text('Nombre: ${examen['nombre'] ?? ''}'),
-                      subtitle: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FutureBuilder<DocumentSnapshot>(
-                                  future: firestore
-                                      .collection('temas')
-                                      .doc(examen['temaId'])
-                                      .get(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Text('Tema: Cargando...');
-                                    }
-                                    if (!snapshot.hasData) {
-                                      return Text('Tema: Desconocido');
-                                    }
-                                    String themeName =
-                                        snapshot.data!['name'] as String;
-                                    return Text('Tema: $themeName');
-                                  },
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : examenes.isEmpty
+              ? Center(
+                  child: Text(
+                    'No hay exámenes disponibles para este tema.',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: examenes.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> examen = examenes[index];
+                            return Card(
+                              child: ListTile(
+                                title: Text('Nombre: ${examen['nombre'] ?? ''}'),
+                                subtitle: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          FutureBuilder<DocumentSnapshot>(
+                                            future: firestore
+                                                .collection('temas')
+                                                .doc(examen['temaId'])
+                                                .get(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                                return Text('Tema: Cargando...');
+                                              }
+                                              if (!snapshot.hasData) {
+                                                return Text('Tema: Desconocido');
+                                              }
+                                              String themeName = snapshot.data!['name'] as String;
+                                              return Text('Tema: $themeName');
+                                            },
+                                          ),
+                                          Text('Descripción: ${examen['descripcion'] ?? ''}'),
+                                        ],
+                                      ),
+                                    ),
+                                    if (examen['imageUrl'] != null)
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        child: Image.network(
+                                          examen['imageUrl'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                                Text(
-                                    'Descripción: ${examen['descripcion'] ?? ''}'),
-                              ],
-                            ),
-                          ),
-                          if (examen['imageUrl'] != null)
-                            Container(
-                              width: 100,
-                              height: 100,
-                              child: Image.network(
-                                examen['imageUrl'],
-                                fit: BoxFit.cover,
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.question_answer),
+                                      onPressed: () {
+                                        debugPrint('Examen seleccionado: ${examen.toString()}');
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (context) => ExamenPreguntasPropuestas(
+                                            selectedExamen: examen, // Asegúrate de que este mapa contenga el campo idExamen
+                                          ),
+                                        ));
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.question_answer),
-                            onPressed: () {
-                              debugPrint(
-                                  'Examen seleccionado: ${examen.toString()}');
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ExamenPreguntasPropuestas(
-                                  selectedExamen:
-                                      examen, // Asegúrate de que este mapa contenga el campo idExamen
-                                ),
-                              ));
-                            },
-                          ),
-                        ],
-                      ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+                  ),
+                ),
     );
   }
 }

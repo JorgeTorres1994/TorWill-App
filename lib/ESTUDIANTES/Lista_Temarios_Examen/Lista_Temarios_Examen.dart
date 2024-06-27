@@ -82,21 +82,16 @@ import 'package:nueva_app_web_matematicas/ESTUDIANTES/Lista_Temas_Examen/lista_t
 
 class ListaTemariosExamen extends StatefulWidget {
   @override
-  _ListaExamenesPorTemarioState createState() =>
-      _ListaExamenesPorTemarioState();
+  _ListaExamenesPorTemarioState createState() => _ListaExamenesPorTemarioState();
 }
 
 class _ListaExamenesPorTemarioState extends State<ListaTemariosExamen> {
   List<Map<String, dynamic>> temarios = [];
 
   Future<List<Map<String, dynamic>>> getTemarios() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('temario').get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('temario').get();
 
-    return querySnapshot.docs
-        .map((DocumentSnapshot document) =>
-            document.data() as Map<String, dynamic>)
-        .toList();
+    return querySnapshot.docs.map((DocumentSnapshot document) => document.data() as Map<String, dynamic>).toList();
   }
 
   @override
@@ -115,32 +110,58 @@ class _ListaExamenesPorTemarioState extends State<ListaTemariosExamen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Selecciona el temario de tu examen'),
+        backgroundColor: Colors.blueAccent,
       ),
       body: temarios.isEmpty
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: temarios.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    temarios[index]['name'],
-                    style: TextStyle(fontSize: 20.0),
+                final temario = temarios[index];
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    elevation: 5,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
+                        gradient: LinearGradient(
+                          colors: [Colors.blue[100]!, Colors.blue[400]!],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(15.0),
+                        title: Text(
+                          '${index + 1}. ${temario['name']}',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        leading: CircleAvatar(
+                          backgroundImage: AssetImage('images/temariosExamen.png'),
+                          radius: 30,
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          _onTemarioSelected(temario);
+                        },
+                        selected: temario['selected'] ?? false,
+                        selectedTileColor: Colors.blue.withOpacity(0.3),
+                      ),
+                    ),
                   ),
-                  leading: Image.asset(
-                    'images/temariosExamen.png',
-                    width: 100.0,
-                    height: 100.0,
-                  ),
-                  onTap: () {
-                    // Lógica de selección del temario
-                    _onTemarioSelected(temarios[index]);
-                  },
-                  selected: temarios[index]['selected'] ?? false,
-                  tileColor: temarios[index]['selected'] ?? false
-                      ? Colors.blue.withOpacity(0.3)
-                      : null,
                 );
               },
             ),
@@ -148,6 +169,13 @@ class _ListaExamenesPorTemarioState extends State<ListaTemariosExamen> {
   }
 
   void _onTemarioSelected(Map<String, dynamic> temario) {
+    setState(() {
+      temarios.forEach((element) {
+        element['selected'] = false;
+      });
+      temario['selected'] = true;
+    });
+
     Navigator.push(
       context,
       MaterialPageRoute(
