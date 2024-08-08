@@ -17,9 +17,8 @@ class _CuestionarioPreguntasResueltosState
     extends State<CuestionarioPreguntasResueltos> {
   Map<String, dynamic>? _selectedCuestionarioResuelto;
   List<Map<String, dynamic>> preguntas = [];
-  bool _isSeen =
-      false; // Variable para controlar si el cuestionario ha sido visto
-  bool _isLoading = true; // Variable para controlar si la página está cargando
+  bool _isSeen = false;
+  bool _isLoading = true;
 
   final CollectionReference cuestionarioPreguntasResueltosCollection =
       FirebaseFirestore.instance.collection('CuestionarioResueltos');
@@ -41,7 +40,7 @@ class _CuestionarioPreguntasResueltosState
   }
 
   Future<void> _initializeData() async {
-    await _checkIfSeen(); // Verifica si el cuestionario ya ha sido visto
+    await verificarSiEsVisto(); // Verifica si el cuestionario ya ha sido visto
     await cargarPreguntasResueltas();
     setState(() {
       _isLoading = false; // Indica que la página ha terminado de cargar
@@ -56,7 +55,7 @@ class _CuestionarioPreguntasResueltosState
 
       setState(() {
         _selectedCuestionarioResuelto = cuestionariosSnapshot.docs.isNotEmpty
-            ? cuestionariosSnapshot.docs[0].data()
+            ? {'id': cuestionariosSnapshot.docs[0].id, ...cuestionariosSnapshot.docs[0].data()}
             : null;
       });
     } catch (e) {
@@ -70,7 +69,7 @@ class _CuestionarioPreguntasResueltosState
         QuerySnapshot<Map<String, dynamic>> preguntasSnapshot =
             await cuestionarioPreguntasResueltosCollection
                 .where('idCuestionario',
-                    isEqualTo: _selectedCuestionarioResuelto!['nombre'])
+                    isEqualTo: _selectedCuestionarioResuelto!['nombre']) // Comparar por nombre
                 .get() as QuerySnapshot<Map<String, dynamic>>;
 
         setState(() {
@@ -84,13 +83,13 @@ class _CuestionarioPreguntasResueltosState
     }
   }
 
-  Future<void> _checkIfSeen() async {
+  Future<void> verificarSiEsVisto() async {
     try {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('CuestionariosResueltosVistos')
           .where('idCuestionario',
-              isEqualTo: _selectedCuestionarioResuelto!['nombre'])
+              isEqualTo: _selectedCuestionarioResuelto!['nombre']) // Comparar por nombre
           .where('userId', isEqualTo: userId)
           .where('esVisto', isEqualTo: true)
           .get();
@@ -105,13 +104,13 @@ class _CuestionarioPreguntasResueltosState
     }
   }
 
-  Future<void> _markAsSeen() async {
+  Future<void> marcarComoVisto() async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Confirmar'),
-          content: Text('¿Ya viste todo el material propuesto?'),
+          content: Text('¿Ya viste todas las preguntas resueltas?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -136,7 +135,7 @@ class _CuestionarioPreguntasResueltosState
         await FirebaseFirestore.instance
             .collection('CuestionariosResueltosVistos')
             .add({
-          'idCuestionario': _selectedCuestionarioResuelto!['nombre'],
+          'idCuestionario': _selectedCuestionarioResuelto!['id'], // Guardar el ID del cuestionario
           'temaId': _selectedCuestionarioResuelto!['temaId'],
           'userId': userId,
           'esVisto': true,
@@ -161,45 +160,57 @@ class _CuestionarioPreguntasResueltosState
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 16),
-                  Text(
-                    'Lista de Preguntas Resueltas:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          : preguntas.isEmpty
+              ? Center(
+                  child: Text(
+                    'No se encontraron preguntas para el cuestionario con nombre: ${widget.selectedCuestionarioResuelto?['nombre']}',
+                    style: TextStyle(fontSize: 16),
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: preguntas.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> pregunta = preguntas[index];
-                        return Card(
-                          child: ListTile(
-                            title:
-                                Text('Pregunta: ${pregunta['pregunta'] ?? ''}'),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Opción 1: ${pregunta['opcion1'] ?? ''}'),
-                                Text('Opción 2: ${pregunta['opcion2'] ?? ''}'),
-                                Text('Opción 3: ${pregunta['opcion3'] ?? ''}'),
-                                Text('Opción 4: ${pregunta['opcion4'] ?? ''}'),
-                                Text(
-                                    'Respuesta: ${pregunta['respuesta'] ?? ''}'),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16),
+                      Text(
+                        'Lista de Preguntas Resueltas:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: preguntas.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> pregunta = preguntas[index];
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                    'Pregunta: ${pregunta['pregunta'] ?? ''}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Opción 1: ${pregunta['opcion1'] ?? ''}'),
+                                    Text(
+                                        'Opción 2: ${pregunta['opcion2'] ?? ''}'),
+                                    Text(
+                                        'Opción 3: ${pregunta['opcion3'] ?? ''}'),
+                                    Text(
+                                        'Opción 4: ${pregunta['opcion4'] ?? ''}'),
+                                    Text(
+                                        'Respuesta: ${pregunta['respuesta'] ?? ''}'),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-      floatingActionButton: _isLoading
+                ),
+      floatingActionButton: _isLoading || preguntas.isEmpty
           ? null
           : Align(
               alignment: Alignment.bottomRight,
@@ -219,7 +230,7 @@ class _CuestionarioPreguntasResueltosState
                       ),
                     SizedBox(width: 8),
                     FloatingActionButton(
-                      onPressed: _isSeen ? null : _markAsSeen,
+                      onPressed: _isSeen ? null : marcarComoVisto,
                       child: Icon(Icons.check),
                       backgroundColor: _isSeen ? Colors.grey : Colors.blue,
                     ),
@@ -250,9 +261,8 @@ class _CuestionarioPreguntasResueltosState
     extends State<CuestionarioPreguntasResueltos> {
   Map<String, dynamic>? _selectedCuestionarioResuelto;
   List<Map<String, dynamic>> preguntas = [];
-  bool _isSeen =
-      false; // Variable para controlar si el cuestionario ha sido visto
-  bool _isLoading = true; // Variable para controlar si la página está cargando
+  bool _isSeen = false;
+  bool _isLoading = true;
 
   final CollectionReference cuestionarioPreguntasResueltosCollection =
       FirebaseFirestore.instance.collection('CuestionarioResueltos');
@@ -274,7 +284,7 @@ class _CuestionarioPreguntasResueltosState
   }
 
   Future<void> _initializeData() async {
-    await _checkIfSeen(); // Verifica si el cuestionario ya ha sido visto
+    await verificarSiEsVisto(); // Verifica si el cuestionario ya ha sido visto
     await cargarPreguntasResueltas();
     setState(() {
       _isLoading = false; // Indica que la página ha terminado de cargar
@@ -289,7 +299,7 @@ class _CuestionarioPreguntasResueltosState
 
       setState(() {
         _selectedCuestionarioResuelto = cuestionariosSnapshot.docs.isNotEmpty
-            ? cuestionariosSnapshot.docs[0].data()
+            ? {'id': cuestionariosSnapshot.docs[0].id, ...cuestionariosSnapshot.docs[0].data()}
             : null;
       });
     } catch (e) {
@@ -303,7 +313,7 @@ class _CuestionarioPreguntasResueltosState
         QuerySnapshot<Map<String, dynamic>> preguntasSnapshot =
             await cuestionarioPreguntasResueltosCollection
                 .where('idCuestionario',
-                    isEqualTo: _selectedCuestionarioResuelto!['nombre'])
+                    isEqualTo: _selectedCuestionarioResuelto!['nombre']) // Comparar por nombre
                 .get() as QuerySnapshot<Map<String, dynamic>>;
 
         setState(() {
@@ -317,13 +327,13 @@ class _CuestionarioPreguntasResueltosState
     }
   }
 
-  Future<void> _checkIfSeen() async {
+  Future<void> verificarSiEsVisto() async {
     try {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('CuestionariosResueltosVistos')
           .where('idCuestionario',
-              isEqualTo: _selectedCuestionarioResuelto!['nombre'])
+              isEqualTo: _selectedCuestionarioResuelto!['id']) // Usar el id en lugar del nombre
           .where('userId', isEqualTo: userId)
           .where('esVisto', isEqualTo: true)
           .get();
@@ -333,18 +343,19 @@ class _CuestionarioPreguntasResueltosState
           _isSeen = true;
         });
       }
+      print("Verificado si es visto: $_isSeen");
     } catch (e) {
       print("Error checking if seen: $e");
     }
   }
 
-  Future<void> _markAsSeen() async {
+  Future<void> marcarComoVisto() async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Confirmar'),
-          content: Text('¿Ya viste todo las preguntas resueltas?'),
+          content: Text('¿Ya viste todas las preguntas resueltas?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -369,7 +380,7 @@ class _CuestionarioPreguntasResueltosState
         await FirebaseFirestore.instance
             .collection('CuestionariosResueltosVistos')
             .add({
-          'idCuestionario': _selectedCuestionarioResuelto!['nombre'],
+          'idCuestionario': _selectedCuestionarioResuelto!['id'], // Guardar el ID del cuestionario
           'temaId': _selectedCuestionarioResuelto!['temaId'],
           'userId': userId,
           'esVisto': true,
@@ -377,6 +388,7 @@ class _CuestionarioPreguntasResueltosState
         setState(() {
           _isSeen = true;
         });
+        print("Marcado como visto: $_isSeen");
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Cuestionario marcado como visto.'),
         ));
@@ -394,45 +406,57 @@ class _CuestionarioPreguntasResueltosState
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 16),
-                  Text(
-                    'Lista de Preguntas Resueltas:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          : preguntas.isEmpty
+              ? Center(
+                  child: Text(
+                    'No se encontraron preguntas para el cuestionario con nombre: ${widget.selectedCuestionarioResuelto?['nombre']}',
+                    style: TextStyle(fontSize: 16),
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: preguntas.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> pregunta = preguntas[index];
-                        return Card(
-                          child: ListTile(
-                            title:
-                                Text('Pregunta: ${pregunta['pregunta'] ?? ''}'),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Opción 1: ${pregunta['opcion1'] ?? ''}'),
-                                Text('Opción 2: ${pregunta['opcion2'] ?? ''}'),
-                                Text('Opción 3: ${pregunta['opcion3'] ?? ''}'),
-                                Text('Opción 4: ${pregunta['opcion4'] ?? ''}'),
-                                Text(
-                                    'Respuesta: ${pregunta['respuesta'] ?? ''}'),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16),
+                      Text(
+                        'Lista de Preguntas Resueltas:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: preguntas.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> pregunta = preguntas[index];
+                            return Card(
+                              child: ListTile(
+                                title: Text(
+                                    'Pregunta: ${pregunta['pregunta'] ?? ''}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                        'Opción 1: ${pregunta['opcion1'] ?? ''}'),
+                                    Text(
+                                        'Opción 2: ${pregunta['opcion2'] ?? ''}'),
+                                    Text(
+                                        'Opción 3: ${pregunta['opcion3'] ?? ''}'),
+                                    Text(
+                                        'Opción 4: ${pregunta['opcion4'] ?? ''}'),
+                                    Text(
+                                        'Respuesta: ${pregunta['respuesta'] ?? ''}'),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-      floatingActionButton: _isLoading
+                ),
+      floatingActionButton: _isLoading || preguntas.isEmpty
           ? null
           : Align(
               alignment: Alignment.bottomRight,
@@ -452,7 +476,7 @@ class _CuestionarioPreguntasResueltosState
                       ),
                     SizedBox(width: 8),
                     FloatingActionButton(
-                      onPressed: _isSeen ? null : _markAsSeen,
+                      onPressed: _isSeen ? null : marcarComoVisto,
                       child: Icon(Icons.check),
                       backgroundColor: _isSeen ? Colors.grey : Colors.blue,
                     ),

@@ -244,11 +244,17 @@ class _CuestionarioPreguntasPropuestasState
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: busquedaCompleta
-                      ? (preguntas.isNotEmpty
+          : busquedaCompleta && preguntas.isEmpty
+              ? Center(
+                  child: Text(
+                    'No se encontraron preguntas para el cuestionario con nombre: ${widget.selectedCuestionario['nombre']}',
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: busquedaCompleta
                           ? ListView.builder(
                               itemCount: preguntas.length,
                               itemBuilder: (context, index) {
@@ -315,50 +321,47 @@ class _CuestionarioPreguntasPropuestasState
                                 );
                               },
                             )
-                          : Center(
-                              child: Text(
-                                  'No se encontraron preguntas para el cuestionario con nombre: ${widget.selectedCuestionario['nombre']}'),
-                            ))
-                      : Center(child: CircularProgressIndicator()),
-                ),
-                if (busquedaCompleta &&
-                    preguntas.isNotEmpty &&
-                    resultadoRespuestas.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: ElevatedButton(
-                      onPressed: verificarRespuestas,
-                      child: Text('Enviar Respuestas'),
+                          : Center(child: CircularProgressIndicator()),
                     ),
-                  ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (esVisto)
-                          Text(
-                            'VISTO',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        SizedBox(width: 8),
-                        FloatingActionButton(
-                          onPressed: esVisto ? null : marcarComoVisto,
-                          child: Icon(Icons.check),
-                          backgroundColor: esVisto ? Colors.grey : Colors.blue,
+                    if (busquedaCompleta &&
+                        preguntas.isNotEmpty &&
+                        resultadoRespuestas.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: ElevatedButton(
+                          onPressed: verificarRespuestas,
+                          child: Text('Enviar Respuestas'),
                         ),
-                      ],
+                      ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (esVisto)
+                              Text(
+                                'VISTO',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            SizedBox(width: 8),
+                            FloatingActionButton(
+                              onPressed: esVisto ? null : marcarComoVisto,
+                              child: Icon(Icons.check),
+                              backgroundColor:
+                                  esVisto ? Colors.grey : Colors.blue,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
     );
   }
 }
@@ -609,11 +612,17 @@ class _CuestionarioPreguntasPropuestasState
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: busquedaCompleta
-                      ? (preguntas.isNotEmpty
+          : busquedaCompleta && preguntas.isEmpty
+              ? Center(
+                  child: Text(
+                    'No se encontraron preguntas para el cuestionario con nombre: ${widget.selectedCuestionario['nombre']}',
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: busquedaCompleta
                           ? ListView.builder(
                               itemCount: preguntas.length,
                               itemBuilder: (context, index) {
@@ -680,50 +689,47 @@ class _CuestionarioPreguntasPropuestasState
                                 );
                               },
                             )
-                          : Center(
-                              child: Text(
-                                  'No se encontraron preguntas para el cuestionario con nombre: ${widget.selectedCuestionario['nombre']}'),
-                            ))
-                      : Center(child: CircularProgressIndicator()),
-                ),
-                if (busquedaCompleta &&
-                    preguntas.isNotEmpty &&
-                    resultadoRespuestas.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: ElevatedButton(
-                      onPressed: verificarRespuestas,
-                      child: Text('Enviar Respuestas'),
+                          : Center(child: CircularProgressIndicator()),
                     ),
-                  ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (esVisto)
-                          Text(
-                            'VISTO',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        SizedBox(width: 8),
-                        FloatingActionButton(
-                          onPressed: esVisto ? null : marcarComoVisto,
-                          child: Icon(Icons.check),
-                          backgroundColor: esVisto ? Colors.grey : Colors.blue,
+                    if (busquedaCompleta &&
+                        preguntas.isNotEmpty &&
+                        resultadoRespuestas.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: ElevatedButton(
+                          onPressed: verificarRespuestas,
+                          child: Text('Enviar Respuestas'),
                         ),
-                      ],
+                      ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (esVisto)
+                              Text(
+                                'VISTO',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            SizedBox(width: 8),
+                            FloatingActionButton(
+                              onPressed: esVisto ? null : marcarComoVisto,
+                              child: Icon(Icons.check),
+                              backgroundColor:
+                                  esVisto ? Colors.grey : Colors.blue,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
     );
   }
 }

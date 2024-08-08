@@ -1,8 +1,10 @@
-/*import 'package:firebase_auth/firebase_auth.dart';
+/*import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
 import 'package:nueva_app_web_matematicas/Bienvenida/bienvenida.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
+import 'package:nueva_app_web_matematicas/ESTUDIANTES/Dashboard_Estudiante/dashboard_estudiante.dart';
 import 'package:nueva_app_web_matematicas/providers/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -47,20 +49,49 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                // Muestra un indicador de carga mientras se verifica la autenticación
-                return const CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                // Muestra un mensaje de error si ocurre un error
                 return Center(
                   child: Text('Error: ${snapshot.error}'),
                 );
               } else {
-                // Verifica si el usuario está autenticado
                 final isUserSignedIn = snapshot.hasData;
 
-                // Si el usuario está autenticado, muestra el dashboard
-                // De lo contrario, muestra la pantalla de bienvenida
-                return isUserSignedIn ? const Dashboard() : const Bienvenida();
+                if (isUserSignedIn) {
+                  final User? user = FirebaseAuth.instance.currentUser;
+
+                  if (user != null) {
+                    return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .get(),
+                      builder: (context, userSnapshot) {
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.done) {
+                          if (userSnapshot.hasError) {
+                            return Center(
+                              child:
+                                  Text('Error al cargar los datos del usuario'),
+                            );
+                          }
+
+                          var isAdmin = userSnapshot.data?['isAdmin'] ?? false;
+
+                          if (isAdmin) {
+                            return const Dashboard();
+                          } else {
+                            return DashboardEstudiante();
+                          }
+                        }
+
+                        return Center(child: CircularProgressIndicator());
+                      },
+                    );
+                  }
+                }
+
+                return const Bienvenida();
               }
             },
           ),
@@ -114,8 +145,18 @@ class MyApp extends StatelessWidget {
     return Consumer<DarkThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          theme:
-              themeProvider.getDarkTheme ? ThemeData.dark() : ThemeData.light(),
+          theme: ThemeData(
+            brightness: Brightness.light,
+            primarySwatch: Colors.blue, // Swatch de color para el tema claro
+            fontFamily: 'NotoSans', // Familia de fuente
+          ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            primaryColor: Colors.indigo, // Color primario para el tema oscuro
+            fontFamily: 'NotoSans', // Familia de fuente
+          ),
+          themeMode:
+              themeProvider.getDarkTheme ? ThemeMode.dark : ThemeMode.light,
           debugShowCheckedModeBanner: false,
           title: 'TORWIL APP - APRENDIENDO MATEMÁTICAS',
           home: StreamBuilder(

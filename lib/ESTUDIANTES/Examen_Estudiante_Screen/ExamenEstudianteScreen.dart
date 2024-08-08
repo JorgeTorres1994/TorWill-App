@@ -6,151 +6,6 @@ class ExamenEstudianteScreen extends StatefulWidget {
   final String temaId;
 
   ExamenEstudianteScreen({required this.temaId});
-
-  @override
-  _ExamenEstudianteScreenState createState() => _ExamenEstudianteScreenState();
-}
-
-class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
-  List<Map<String, dynamic>> examenes = [];
-  bool cargando = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _cargarExamenes();
-  }
-
-  void _cargarExamenes() async {
-    try {
-      print("Tema seleccionado: ${widget.temaId}");
-      DocumentSnapshot temaSnapshot = await FirebaseFirestore.instance
-          .collection('temas')
-          .doc(widget.temaId)
-          .get();
-
-      if (!temaSnapshot.exists) {
-        setState(() {
-          cargando = false;
-          examenes = [];
-        });
-        print("El tema no existe.");
-        return;
-      }
-
-      QuerySnapshot examenesSnapshot = await FirebaseFirestore.instance
-          .collection('Examen')
-          .where('temaId', isEqualTo: widget.temaId)
-          .get();
-
-      if (examenesSnapshot.docs.isEmpty) {
-        setState(() {
-          cargando = false;
-          examenes = [];
-        });
-        print("No hay exámenes disponibles para este tema.");
-        return;
-      }
-
-      List<Map<String, dynamic>> examenesData =
-          examenesSnapshot.docs.map((DocumentSnapshot document) {
-        return {
-          ...document.data() as Map<String, dynamic>,
-          'selected': false,
-          'temaName': temaSnapshot['name'],
-        };
-      }).toList();
-
-      setState(() {
-        cargando = false;
-        examenes = examenesData;
-      });
-
-      print("Examenes cargados con éxito: ${examenes.length}");
-    } catch (e) {
-      setState(() {
-        cargando = false;
-        examenes = [];
-      });
-      print("Error al cargar exámenes: $e");
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Examenes del Tema'),
-      ),
-      body: cargando
-          ? Center(child: CircularProgressIndicator())
-          : examenes.isEmpty
-              ? Center(
-                  child: Text('No hay exámenes disponibles para este tema.'),
-                )
-              : ListView.builder(
-                  itemCount: examenes.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        leading: Image.asset(
-                          'images/examen_resultado.png',
-                          width: 50.0,
-                          height: 50.0,
-                        ),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Nombre: ${examenes[index]['nombre'] ?? ''}',
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                            Text(
-                              'Tema: ${examenes[index]['temaName'] ?? ''}',
-                              style: TextStyle(fontSize: 16.0),
-                            ),
-                            Text(
-                              'Descripción: ${examenes[index]['descripcion'] ?? ''}',
-                              style: TextStyle(fontSize: 16.0),
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(
-                            examenes[index]['selected']
-                                ? Icons.question_answer
-                                : Icons.question_answer_outlined,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ExamenPreguntasPropuestas(
-                                  selectedExamen: examenes[
-                                      index], // Pasa el examen seleccionado
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-    );
-  }
-}
-
-*/
-
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:nueva_app_web_matematicas/ESTUDIANTES/Examenes_Preguntas_Propuestas/examenes_preguntas_propuestas.dart';
-
-class ExamenEstudianteScreen extends StatefulWidget {
-  final String temaId;
-
-  ExamenEstudianteScreen({required this.temaId});
   @override
   _ExamenEstudianteScreenState createState() => _ExamenEstudianteScreenState();
 }
@@ -289,6 +144,139 @@ class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
                     ),
                   ),
                 ),
+    );
+  }
+}
+*/
+
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nueva_app_web_matematicas/ESTUDIANTES/Examenes_Preguntas_Propuestas/examenes_preguntas_propuestas.dart';
+
+class ExamenEstudianteScreen extends StatefulWidget {
+  final String temaId;
+
+  ExamenEstudianteScreen({required this.temaId});
+
+  @override
+  _ExamenEstudianteScreenState createState() => _ExamenEstudianteScreenState();
+}
+
+class _ExamenEstudianteScreenState extends State<ExamenEstudianteScreen> {
+  List<Map<String, dynamic>> examenes = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExamenesFromFirestore();
+  }
+
+  Future<void> _loadExamenesFromFirestore() async {
+    try {
+      QuerySnapshot examenesSnapshot = await FirebaseFirestore.instance
+          .collection('Examen')
+          .where('temaId', isEqualTo: widget.temaId)
+          .get();
+
+      setState(() {
+        isLoading = false;
+        examenes = examenesSnapshot.docs.map((doc) {
+          return {
+            'id': doc.id,
+            ...doc.data() as Map<String, dynamic>,
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print('Error al cargar examenes desde Firestore: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  /*ImageProvider<Object> getImage(String? imageUrl) {
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return NetworkImage(imageUrl);
+    } else {
+      return AssetImage('images/placeholder.png');
+    }
+  }*/
+
+  ImageProvider<Object> getImage(String? imageUrl) {
+    const String placeholderUrl =
+        'https://cdn-icons-png.flaticon.com/128/2817/2817202.png';
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return NetworkImage(imageUrl);
+    } else {
+      return NetworkImage(placeholderUrl);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Examen"),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: examenes.isEmpty
+                      ? Center(
+                          child: Text(
+                              'No hay exámenes disponibles para este tema.',
+                              style: TextStyle(fontSize: 18)))
+                      : ListView.builder(
+                          itemCount: examenes.length,
+                          itemBuilder: (context, index) {
+                            var examen = examenes[index];
+                            return Card(
+                              margin: EdgeInsets.all(8),
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 15),
+                                title: Text(examen['nombre'] ?? 'N/A',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Text(
+                                    examen['descripcion'] ?? 'Sin descripción'),
+                                leading: CircleAvatar(
+                                  backgroundImage: getImage(examen['imageUrl']),
+                                  radius: 25,
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ExamenPreguntasPropuestas(
+                                              selectedExamen: examen),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    'Total de exámenes: ${examenes.length}',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
