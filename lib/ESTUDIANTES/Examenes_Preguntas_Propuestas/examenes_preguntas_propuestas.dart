@@ -335,7 +335,7 @@ class _ExamenPreguntasPropuestasState extends State<ExamenPreguntasPropuestas> {
     String idExamen = widget.selectedExamen['id'];
 
     // Registra el puntaje total en ResultadoExamenEstudiante
-    await FirebaseFirestore.instance
+    /*await FirebaseFirestore.instance
         .collection('ResultadoExamenEstudiante')
         .add({
       'idUsuario': idUsuario,
@@ -343,6 +343,15 @@ class _ExamenPreguntasPropuestasState extends State<ExamenPreguntasPropuestas> {
       'puntajeTotal':
           correctas * 2, // Asumiendo que cada respuesta correcta vale 2 puntos
       'fecha': FieldValue.serverTimestamp(),
+    });*/
+
+    await FirebaseFirestore.instance
+        .collection('ResultadoExamenEstudiante')
+        .add({
+      'idUsuario': idUsuario,
+      'idExamen': idExamen,
+      'puntajeTotal':
+          correctas * 5
     });
 
     // Registra el detalle de cada pregunta en DetalleExamen
@@ -350,7 +359,7 @@ class _ExamenPreguntasPropuestasState extends State<ExamenPreguntasPropuestas> {
       String preguntaId = pregunta['id'];
       bool esCorrecta = resultadoRespuestas[preguntaId] ?? false;
       int puntos = esCorrecta
-          ? 2
+          ? 5
           : 0; // Asumiendo que cada respuesta correcta vale 2 puntos
 
       await FirebaseFirestore.instance

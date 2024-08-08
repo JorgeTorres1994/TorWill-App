@@ -161,8 +161,8 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
             itemCount: resultados.length,
             itemBuilder: (context, index) {
               var resultado = resultados[index];
-              var fecha = DateFormat('dd/MM/yyyy')
-                  .format((resultado['fecha'] as Timestamp).toDate());
+              /*var fecha = DateFormat('dd/MM/yyyy')
+                  .format((resultado['fecha'] as Timestamp).toDate());*/
               var puntajeTotal = resultado['puntajeTotal'].toString();
               var nombreExamen = ''; // Inicialmente vacío
 
@@ -199,10 +199,10 @@ class _NotasExamenEstudianteState extends State<NotasExamenEstudiante> {
                             'Puntaje: $puntajeTotal',
                             style: TextStyle(color: Colors.white),
                           ),
-                          Text(
+                          /*Text(
                             'Fecha: $fecha',
                             style: TextStyle(color: Colors.white),
-                          ),
+                          ),*/
                         ],
                       ),
                       trailing: Container(
