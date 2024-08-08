@@ -619,7 +619,7 @@ class _CuestionarioPreguntasPropuestasState
 
     if (existingResult.docs.isNotEmpty) {
       await existingResult.docs.first.reference.update({
-        'puntajeTotal': puntajeTotal, // Actualizar con el nuevo puntaje total
+        'puntajeTotal': puntajeTotal,  // Actualizar con el nuevo puntaje total
         'fecha': FieldValue.serverTimestamp(),
       });
     } else {
@@ -628,8 +628,7 @@ class _CuestionarioPreguntasPropuestasState
           .add({
         'idUsuario': idUsuario,
         'idCuestionario': idCuestionario,
-        'puntajeTotal':
-            puntajeTotal, // Establecer puntaje total por primera vez
+        'puntajeTotal': puntajeTotal,  // Establecer puntaje total por primera vez
         'fecha': FieldValue.serverTimestamp(),
       });
     }
@@ -648,7 +647,8 @@ class _CuestionarioPreguntasPropuestasState
         'respondidoPor': idUsuario,
       }, SetOptions(merge: true));
     }
-  }
+}
+
 
   void mostrarMensajeUsuarioNoIdentificado() {
     ScaffoldMessenger.of(context).showSnackBar(
