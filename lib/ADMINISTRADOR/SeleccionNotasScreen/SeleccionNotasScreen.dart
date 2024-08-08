@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/Dashboard_Profesor/dashboard_profesor.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaTemariosCuestionarios/ListaTemariosCuestionarios.dart';
 import 'package:nueva_app_web_matematicas/ADMINISTRADOR/ListaTemariosExamenes/ListaTemariosExamenes.dart';
+import 'package:nueva_app_web_matematicas/ADMINISTRADOR/PromedioNotas.dart/PromedioNotas.dart';
 
 class SeleccionNotasScreen extends StatefulWidget {
   SeleccionNotasScreen({Key? key}) : super(key: key);
@@ -46,13 +47,13 @@ class _SeleccionNotasScreenState extends State<SeleccionNotasScreen> {
                 'Cuestionarios',
                 'images/boleta-de-calificaciones.png',
                 ListaNotasCuestionarioEstudiante(),
-              ),
+              ),*/
               SizedBox(width: 20),
               _buildOptionButton(
-                'Exámenes',
-                'images/certificado.png',
-                ListaNotasExamenEstudiante(),
-              ),*/
+                'Promedio Notas',
+                'images/examen.png',
+                PromedioNotas(),
+              ),
               _buildOptionButton(
                 'Cuestionarios',
                 'images/boleta-de-calificaciones.png',
