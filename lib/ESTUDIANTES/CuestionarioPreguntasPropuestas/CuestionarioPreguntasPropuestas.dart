@@ -502,7 +502,7 @@ class _CuestionarioPreguntasPropuestasState
     }
   }
 
-  void verificarRespuestas() async {
+  /*void verificarRespuestas() async {
     int correctas = 0;
     Map<String, bool> resultadosTemporales = {};
 
@@ -531,9 +531,43 @@ class _CuestionarioPreguntasPropuestasState
     final resultado =
         'Respondiste correctamente $correctas de ${preguntas.length} preguntas.';
     await mostrarDialogoResultado(resultado);
+  }*/
+
+  void verificarRespuestas() async {
+    int correctas = 0;
+    Map<String, bool> resultadosTemporales = {};
+
+    for (var pregunta in preguntas) {
+      String? respuestaCorrecta = pregunta['respuesta'];
+      String? respuestaUsuario = respuestasUsuario[pregunta['id']];
+      bool esCorrecta =
+          respuestaCorrecta != null && respuestaUsuario == respuestaCorrecta;
+      resultadosTemporales[pregunta['id']] = esCorrecta;
+      if (esCorrecta) {
+        correctas++;
+      }
+    }
+
+    setState(() {
+      resultadoRespuestas = resultadosTemporales;
+    });
+
+    User? usuario = FirebaseAuth.instance.currentUser;
+    if (usuario == null) {
+      mostrarMensajeUsuarioNoIdentificado();
+      return;
+    }
+
+    String idUsuario = usuario.uid;
+    int puntajeTotal = correctas * 5; // Cada correcta vale 5 puntos
+    await registrarPuntajeTotal(puntajeTotal, idUsuario);
+
+    final resultado =
+        'Respondiste correctamente $correctas de ${preguntas.length} preguntas. Puntaje total: $puntajeTotal';
+    await mostrarDialogoResultado(resultado);
   }
 
-  Future<void> registrarPuntajeTotal(int correctas, String idUsuario) async {
+  /*Future<void> registrarPuntajeTotal(int correctas, String idUsuario) async {
     String idCuestionario = widget.selectedCuestionario['id'];
 
     var existingResult = await FirebaseFirestore.instance
@@ -554,6 +588,48 @@ class _CuestionarioPreguntasPropuestasState
         'idUsuario': idUsuario,
         'idCuestionario': idCuestionario,
         'puntajeTotal': correctas * 2,
+        'fecha': FieldValue.serverTimestamp(),
+      });
+    }
+
+    for (var pregunta in preguntas) {
+      String preguntaId = pregunta['id'];
+      bool esCorrecta = resultadoRespuestas[preguntaId] ?? false;
+      int puntos = esCorrecta ? 5 : 0;
+
+      await FirebaseFirestore.instance
+          .collection('DetalleCuestionario')
+          .doc(preguntaId)
+          .set({
+        'idCuestionarioPreguntas': preguntaId,
+        'puntos': puntos,
+        'respondidoPor': idUsuario,
+      }, SetOptions(merge: true));
+    }
+  }*/
+
+  Future<void> registrarPuntajeTotal(int puntajeTotal, String idUsuario) async {
+    String idCuestionario = widget.selectedCuestionario['id'];
+
+    var existingResult = await FirebaseFirestore.instance
+        .collection('ResultadoCuestionarioEstudiante')
+        .where('idUsuario', isEqualTo: idUsuario)
+        .where('idCuestionario', isEqualTo: idCuestionario)
+        .get();
+
+    if (existingResult.docs.isNotEmpty) {
+      await existingResult.docs.first.reference.update({
+        'puntajeTotal': puntajeTotal, // Actualizar con el nuevo puntaje total
+        'fecha': FieldValue.serverTimestamp(),
+      });
+    } else {
+      await FirebaseFirestore.instance
+          .collection('ResultadoCuestionarioEstudiante')
+          .add({
+        'idUsuario': idUsuario,
+        'idCuestionario': idCuestionario,
+        'puntajeTotal':
+            puntajeTotal, // Establecer puntaje total por primera vez
         'fecha': FieldValue.serverTimestamp(),
       });
     }
